@@ -2,8 +2,6 @@
 
 Welcome to the React + Vite + Socket.IO Chat App! This is a real-time chat application built using React for the frontend, Vite as the build tool, and Socket.IO for real-time communication.
 
-![Chat App Screenshot](path-to-screenshot.png)
-
 ## Table of Contents
 
 - [Features](#features)
@@ -23,10 +21,6 @@ Welcome to the React + Vite + Socket.IO Chat App! This is a real-time chat appli
 - Online/offline status
 - Responsive design
 
-## Demo
-
-Check out the live demo: [Chat App Demo](http://example.com)
-
 ## Installation
 
 Follow these steps to get the project up and running on your local machine:
@@ -42,11 +36,11 @@ Follow these steps to get the project up and running on your local machine:
 
    ```bash
    # Install client dependencies
-   cd client
+   cd frontend
    npm install
 
    # Install server dependencies
-   cd ../server
+   cd ../backend
    npm install
    ```
 
@@ -54,17 +48,17 @@ Follow these steps to get the project up and running on your local machine:
 
    ```bash
    # Start the client
-   cd client
+   cd frontend
    npm run dev
 
    # Start the server
-   cd ../server
+   cd ../backend
    npm run start
    ```
 
 4. **Open your browser and navigate to:**
    ```
-   http://localhost:3000
+   http://localhost:5713
    ```
 
 ## Usage
@@ -79,7 +73,7 @@ Follow these steps to get the project up and running on your local machine:
 
   - React
   - Vite
-  - CSS Modules
+  - Tailwind
 
 - **Backend:**
   - Node.js

@@ -5,9 +5,12 @@ const socketIo = require("socket.io");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const User = require("./models/User");
+const Message = require("./models/Message");
 const cors = require("cors");
 require("dotenv").config();
 
+//..........................................
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
@@ -16,22 +19,32 @@ const io = socketIo(server, {
     methods: ["GET", "POST"],
   },
 });
-
 app.use(express.json());
+
+//cors.....................................................................
 app.use(cors({ origin: "http://localhost:5173", withCredentials: true }));
+
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "http://localhost:5173");
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 });
+
 mongoose.connect(process.env.MONGO_URI);
 
-const User = require("./models/User");
-const Message = require("./models/Message");
-const { Socket } = require("net");
+// token verification in io.....................................
+const verifyToken = (token, callback) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      console.log("Unauthorized");
+      return callback(err);
+    }
+    callback(null, decoded);
+  });
+};
 
-// Authentication Middleware
+// Authentication Middleware.......................................
 const authMiddleware = (req, res, next) => {
   const token = req.header("Authorization").replace("Bearer ", "");
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
@@ -45,7 +58,7 @@ const authMiddleware = (req, res, next) => {
   });
 };
 
-// Register
+// Register..........................................................
 app.post("/register", async (req, res) => {
   const { username, password } = req.body;
   const hashedPassword = await bcrypt.hash(password, 8);
@@ -54,7 +67,7 @@ app.post("/register", async (req, res) => {
   res.status(201).send({ message: "User registered successfully" });
 });
 
-// Login
+// Login............................................
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
   const user = await User.findOne({ username });
@@ -65,53 +78,62 @@ app.post("/login", async (req, res) => {
   res.send({ user: user, token: token });
 });
 
-// Send Message
-app.post("/messages", authMiddleware, async (req, res) => {
-  const { content } = req.body;
+//Get Users.............................................
+app.get("/users", authMiddleware, async (req, res) => {
   try {
-    const newMessage = new Message({
-      content,
-      sender: req.user._id, // Assuming req.user is set by authMiddleware
-    });
-    await newMessage.save();
-    io.emit("receiveMessage", newMessage); // Emit message to all clients
-    res.status(201).send({ message: "Message sent successfully" });
+    const users = await User.find().select("-password");
+    res.json(users);
   } catch (error) {
-    res.status(500).send({ error: "Error sending message" });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
-// Fetch Messages
+//  Send Message ................NOT USED...............................
+// app.post("/messages", authMiddleware, async (req, res) => {});
+
+// Fetch Messages......................................
 app.get("/messages", authMiddleware, async (req, res) => {
   try {
-    const messages = await Message.find().populate("sender", "username"); // Populate sender field with username
+    // const messages = await Message.find().populate("sender", "username"); // Populate sender field with username
+    const messages = await Message.find();
     res.send(messages);
   } catch (error) {
     res.status(500).send({ error: "Error fetching messages" });
   }
 });
 
-// Socket.io connection
+//io with auth...........................................................
 io.on("connection", (socket) => {
-  console.log("New client connected");
+  const token = socket.handshake.query.token;
+  if (!token) {
+    return socket.disconnect(true);
+  }
 
-  socket.on("setUser", () => {});
-
-  socket.on("sendMessage", async (message, user) => {
-    try {
-      const newMessage = new Message({
-        content: message,
-        sender: user._id, // Assuming socket.user is set when client connects
-      });
-      await newMessage.save();
-      io.emit("receiveMessage", newMessage); // Emit message to all clients
-    } catch (error) {
-      console.error("Error saving message:", error);
+  verifyToken(token, (err, decoded) => {
+    if (err) {
+      return socket.disconnect(true);
     }
-  });
 
-  socket.on("disconnect", () => {
-    console.log("Client disconnected");
+    socket.user = decoded; // Store the user data in the socket instance
+    // console.log(decoded);
+    console.log("New client connected");
+
+    socket.on("sendMessage", async (message) => {
+      try {
+        const newMessage = new Message({
+          content: message,
+          sender: socket.user._id, // Use socket.user set by the authentication
+        });
+        await newMessage.save();
+        io.emit("receiveMessage", newMessage); // Emit message to all clients
+      } catch (error) {
+        console.error("Error saving message:", error);
+      }
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Client disconnected");
+    });
   });
 });
 

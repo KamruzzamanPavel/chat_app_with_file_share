@@ -6,8 +6,9 @@ import { store, persistor } from "./store/store";
 import AuthMiddleware from "./components/AuthMiddleware";
 import Login from "./pages/Login";
 import Register from "./pages/Rgister";
-import Chat from "./components/Chat";
+// import Chat from "./components/Chat";
 import "./index.css";
+import Home from "./pages/Home";
 
 function App() {
   return (
@@ -21,7 +22,7 @@ function App() {
               path="/"
               element={
                 <AuthMiddleware>
-                  <Chat />
+                  <Home />
                 </AuthMiddleware>
               }
             />
