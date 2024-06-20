@@ -8,7 +8,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Rgister";
 // import Chat from "./components/Chat";
 import "./index.css";
-import Home from "./pages/Home";
+
+import Layout from "./pages/Layout";
 
 function App() {
   return (
@@ -22,7 +23,7 @@ function App() {
               path="/"
               element={
                 <AuthMiddleware>
-                  <Home />
+                  <Layout />
                 </AuthMiddleware>
               }
             />

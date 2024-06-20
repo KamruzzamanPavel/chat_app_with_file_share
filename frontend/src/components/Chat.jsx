@@ -55,24 +55,24 @@ const Chat = () => {
   };
 
   return (
-    <div className="chat-container p-4 max-w-screen-md mx-auto mt-6 bg-slate-700 rounded shadow-md">
-      <div className="messages mb-4 h-80 overflow-y-auto p-4 border rounded">
+    <div className="border border-blue-400 rounded p-1 flex-1 flex flex-col h-full">
+      <div className="flex-1 border-red-400 border bg-white p-4 rounded shadow overflow-y-scroll ">
         {list && list.length > 0 ? (
           list.map((msg, index) => (
             <div
               key={index}
               className={`flex mb-2 ${
-                msg.sender._id === user._id ? "justify-end" : "justify-start"
+                msg.sender === user._id ? "justify-end" : "justify-start"
               }`}
             >
               <div
                 className={`p-2 max-w-xs rounded ${
                   msg.sender === user._id
-                    ? "bg-blue-500 text-white font-semibold ml-auto"
-                    : "bg-gray-100 text-black font-semibold mr-auto"
+                    ? "bg-green-100 border border-green-200"
+                    : "bg-blue-100 border border-blue-200"
                 }`}
               >
-                {msg.content}
+                <p className="text-black font-semibold">{msg.content}</p>
               </div>
             </div>
           ))
@@ -81,18 +81,19 @@ const Chat = () => {
         )}
         <div ref={messagesEndRef}></div>
       </div>
-      <div className="flex">
+
+      <div className="mt-4 flex">
         <input
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={handleKeyDown} // Call handleKeyDown on key press
-          className="border p-2 flex-grow rounded"
+          onKeyDown={handleKeyDown}
+          className="flex-1 p-2 border rounded-l"
           placeholder="Type your message..."
         />
         <button
           onClick={sendMessage}
-          className="bg-blue-500 hover:bg-blue-700 text-white p-2 rounded ml-2"
+          className="bg-blue-500 hover:bg-blue-700 text-white p-2 rounded-r"
         >
           Send
         </button>
@@ -100,5 +101,4 @@ const Chat = () => {
     </div>
   );
 };
-
 export default Chat;
