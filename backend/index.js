@@ -55,7 +55,7 @@ const authMiddleware = (req, res, next) => {
       console.log("Unauthorized");
       return res.status(401).send({ error: "Unauthorized" });
     }
-    console.log("authorized");
+    // console.log("authorized");
     req.user = decoded;
     req.contact = contact;
     next();
@@ -151,8 +151,9 @@ io.on("connection", (socket) => {
         const senderSocketId = Array.from(socketIdToUserId.entries()).filter(
           ([id, userId]) => userId === sender
         )?.[0];
-        console.log(contactSocketId);
-        if (contactSocketId.length != 0) {
+        //..........................
+        // console.log(contactSocketId);
+        if (contactSocketId) {
           io.to(contactSocketId[0]).emit("receiveMessage", newMessage);
           io.to(senderSocketId[0]).emit("receiveMessage", newMessage);
           // Update message status to 'sent' or remove from pending (depending on your logic)
@@ -160,7 +161,7 @@ io.on("connection", (socket) => {
           await newMessage.save();
         } else {
           io.to(senderSocketId[0]).emit("receiveMessage", newMessage);
-          console.log(`Contact ${contact._id} is not online`);
+          console.log(`Contact ${contact._id} is not online `);
           // Handle pending message logic (optional)
         }
       } catch (error) {
