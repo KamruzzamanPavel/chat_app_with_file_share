@@ -8,7 +8,6 @@ const authSlice = createSlice({
     loginSuccess: (state, action) => {
       state.user = action.payload.user;
       state.token = action.payload.token;
-      state.contact = null;
     },
     logout: (state) => {
       state.user = null;
@@ -16,7 +15,7 @@ const authSlice = createSlice({
       state.contact = null;
     },
     addContact: (state, action) => {
-      state.contact = action._id;
+      state.contact = action.payload;
     },
   },
   extraReducers: (builder) => {

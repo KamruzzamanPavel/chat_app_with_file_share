@@ -6,7 +6,10 @@ export const fetchMessages = createAsyncThunk(
   async (_, { getState }) => {
     const { auth } = getState();
     const response = await axios.get("http://localhost:5000/messages", {
-      headers: { Authorization: `Bearer ${auth.token}` },
+      headers: {
+        Authorization: `Bearer ${auth.token}`,
+        Receiver: auth.contact._id,
+      },
     });
     return response.data;
   }

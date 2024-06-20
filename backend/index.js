@@ -19,6 +19,8 @@ const io = socketIo(server, {
     methods: ["GET", "POST"],
   },
 });
+
+const socketIdToUserId = new Map();
 app.use(express.json());
 
 //cors.....................................................................
@@ -47,6 +49,7 @@ const verifyToken = (token, callback) => {
 // Authentication Middleware.......................................
 const authMiddleware = (req, res, next) => {
   const token = req.header("Authorization").replace("Bearer ", "");
+  const contact = { _id: req.header("Receiver") };
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
       console.log("Unauthorized");
@@ -54,6 +57,7 @@ const authMiddleware = (req, res, next) => {
     }
     console.log("authorized");
     req.user = decoded;
+    req.contact = contact;
     next();
   });
 };
@@ -95,7 +99,15 @@ app.get("/users", authMiddleware, async (req, res) => {
 app.get("/messages", authMiddleware, async (req, res) => {
   try {
     // const messages = await Message.find().populate("sender", "username"); // Populate sender field with username
-    const messages = await Message.find();
+    // const messages = await Message.find();
+    //
+    const { user, contact } = req; // Extract user and contact from the request object
+    const messages = await Message.find({
+      $or: [
+        { sender: user._id, receiver: contact._id },
+        { sender: contact._id, receiver: user._id },
+      ],
+    });
     res.send(messages);
   } catch (error) {
     res.status(500).send({ error: "Error fetching messages" });
@@ -116,18 +128,44 @@ io.on("connection", (socket) => {
 
     socket.user = decoded; // Store the user data in the socket instance
     // console.log(decoded);
-    console.log("New client connected");
+    // Store socket ID to user ID mapping
+    if (socket.user && socket.user._id) {
+      socketIdToUserId.set(socket.id, socket.user._id.toString());
+    }
+    // console.log(socketIdToUserId);
 
-    socket.on("sendMessage", async (message) => {
+    socket.on("sendMessage", async (message, contact, sender) => {
       try {
         const newMessage = new Message({
           content: message,
-          sender: socket.user._id, // Use socket.user set by the authentication
+          sender: sender, // Assuming socket.user is set by authentication
+          receiver: contact._id,
+          status: "pending", // Add a status field to mark the message as pending
         });
+
         await newMessage.save();
-        io.emit("receiveMessage", newMessage); // Emit message to all clients
+
+        const contactSocketId = Array.from(socketIdToUserId.entries()).filter(
+          ([id, userId]) => userId === contact._id
+        )?.[0];
+        const senderSocketId = Array.from(socketIdToUserId.entries()).filter(
+          ([id, userId]) => userId === sender
+        )?.[0];
+        console.log(contactSocketId);
+        if (contactSocketId.length != 0) {
+          io.to(contactSocketId[0]).emit("receiveMessage", newMessage);
+          io.to(senderSocketId[0]).emit("receiveMessage", newMessage);
+          // Update message status to 'sent' or remove from pending (depending on your logic)
+          newMessage.status = "sent";
+          await newMessage.save();
+        } else {
+          io.to(senderSocketId[0]).emit("receiveMessage", newMessage);
+          console.log(`Contact ${contact._id} is not online`);
+          // Handle pending message logic (optional)
+        }
       } catch (error) {
-        console.error("Error saving message:", error);
+        console.error("Error saving or sending message:", error);
+        // Handle pending message logic (optional)
       }
     });
 

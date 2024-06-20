@@ -2,19 +2,19 @@
 import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import io from "socket.io-client";
-import { fetchMessages, addMessage } from "../store/messageSlice";
+import { addMessage } from "../store/messageSlice";
 
 const Chat = () => {
   const [message, setMessage] = useState("");
   const { list } = useSelector((state) => state.messages);
-  const { user, token } = useSelector((state) => state.auth);
+  const { user, contact, token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const messagesEndRef = useRef(null);
-
-  useEffect(() => {
-    dispatch(fetchMessages());
-  }, [dispatch]);
-
+  //.........................................................
+  // useEffect(() => {
+  //   dispatch(fetchMessages());
+  // }, [dispatch]);
+  //..........................................................
   useEffect(() => {
     const socket = io("http://localhost:5000", {
       query: { token },
@@ -29,11 +29,11 @@ const Chat = () => {
       socket.disconnect();
     };
   }, [token, dispatch]);
-
+  //........................................................
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
+  //...........................................................................................
   const sendMessage = async () => {
     if (message.trim() === "") {
       return; // Prevent sending empty messages
@@ -43,16 +43,26 @@ const Chat = () => {
       query: { token },
     });
 
-    socket.emit("sendMessage", message);
+    socket.emit("sendMessage", message, contact, user._id); //
     setMessage("");
   };
-
+  //...............................................................................................
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault(); // Prevents the default form submission behavior
       sendMessage();
     }
   };
+
+  if (contact == null) {
+    return (
+      <div className="border border-blue-400 rounded p-1 flex-1 flex flex-col h-full">
+        <h2 className="text-xl font-semibold text-red-700">
+          NO Contact SELECTED
+        </h2>
+      </div>
+    );
+  }
 
   return (
     <div className="border border-blue-400 rounded p-1 flex-1 flex flex-col h-full">

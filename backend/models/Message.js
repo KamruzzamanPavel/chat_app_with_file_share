@@ -11,6 +11,11 @@ const MessageSchema = new mongoose.Schema({
     ref: "User", // Reference to the User model
     required: true,
   },
+  receiver: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User", // Reference to the User model
+    required: false,
+  },
   timestamp: {
     type: Date,
     default: Date.now,
