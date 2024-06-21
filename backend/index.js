@@ -132,35 +132,42 @@ io.on("connection", (socket) => {
     if (socket.user && socket.user._id) {
       socketIdToUserId.set(socket.id, socket.user._id.toString());
     }
-    // console.log(socketIdToUserId);
+    console.log(socketIdToUserId);
 
     socket.on("sendMessage", async (message, contact, sender) => {
       try {
         const newMessage = new Message({
           content: message,
           sender: sender, // Assuming socket.user is set by authentication
-          receiver: contact._id,
-          status: "pending", // Add a status field to mark the message as pending
+          receiver: contact._id, // Add a status field to mark the message as pending
         });
 
         await newMessage.save();
 
         const contactSocketId = Array.from(socketIdToUserId.entries()).filter(
           ([id, userId]) => userId === contact._id
-        )?.[0];
+        );
+        console.log(contactSocketId);
         const senderSocketId = Array.from(socketIdToUserId.entries()).filter(
           ([id, userId]) => userId === sender
-        )?.[0];
+        );
         //..........................
-        // console.log(contactSocketId);
+        console.log(senderSocketId);
         if (contactSocketId) {
-          io.to(contactSocketId[0]).emit("receiveMessage", newMessage);
-          io.to(senderSocketId[0]).emit("receiveMessage", newMessage);
+          contactSocketId.map((contactSocketId) => {
+            io.to(contactSocketId[0]).emit("receiveMessage", newMessage);
+          });
+
+          senderSocketId.map((senderSocketId) => {
+            io.to(senderSocketId[0]).emit("receiveMessage", newMessage);
+          });
           // Update message status to 'sent' or remove from pending (depending on your logic)
-          newMessage.status = "sent";
-          await newMessage.save();
+
+          // await newMessage.save();
         } else {
-          io.to(senderSocketId[0]).emit("receiveMessage", newMessage);
+          senderSocketId.map((senderSocketId) => {
+            io.to(senderSocketId[0]).emit("receiveMessage", newMessage);
+          });
           console.log(`Contact ${contact._id} is not online `);
           // Handle pending message logic (optional)
         }

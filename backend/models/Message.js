@@ -14,7 +14,7 @@ const MessageSchema = new mongoose.Schema({
   receiver: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User", // Reference to the User model
-    required: false,
+    required: true,
   },
   timestamp: {
     type: Date,
