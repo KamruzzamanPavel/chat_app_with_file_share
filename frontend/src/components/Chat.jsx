@@ -65,8 +65,8 @@ const Chat = () => {
   }
 
   return (
-    <div className="border border-blue-400 rounded p-1 flex-1 flex flex-col h-full">
-      <div className="flex-1 border-red-400 border bg-white p-4 rounded shadow overflow-y-scroll ">
+    <div className=" rounded p-1 flex-1 flex flex-col h-full bg-slate-500">
+      <div className="flex-1  bg-slate-700 p-4 rounded shadow overflow-y-scroll ">
         {list && list.length > 0 ? (
           list.map((msg, index) => (
             <div

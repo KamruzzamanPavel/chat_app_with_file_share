@@ -1,4 +1,3 @@
-// src/pages/Login.js
 import { useState } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
@@ -22,25 +21,29 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-slate-800">
+      <div className="mb-3 relative flex">
+        <h1 className="text-4xl font-bold text-slate-200 animate-bounce">
+          Login To Chat
+        </h1>
+      </div>
       <form
         onSubmit={handleSubmit}
-        className="bg-white shadow-md rounded p-8 mb-4 max-w-xs w-full"
+        className="bg-slate-700 shadow-md rounded-lg p-8 max-w-xs w-full"
       >
-        <h2 className="text-2xl font-bold mb-4">Login</h2>
         <input
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           placeholder="Username"
-          className="border rounded w-full py-2 px-3 text-gray-700 mb-3"
+          className="border border-slate-600 rounded w-full py-2 px-3 text-slate-200 mb-4 bg-slate-800 focus:outline-none focus:border-slate-500"
         />
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
-          className="border rounded w-full py-2 px-3 text-gray-700 mb-3"
+          className="border border-slate-600 rounded w-full py-2 px-3 text-slate-200 mb-4 bg-slate-800 focus:outline-none focus:border-slate-500"
         />
         <button
           type="submit"

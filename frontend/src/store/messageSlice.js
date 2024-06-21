@@ -31,6 +31,9 @@ const messagesSlice = createSlice({
         (message) => message.id !== action.payload
       );
     },
+    clearMessage: (state) => {
+      state.list = [];
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -48,6 +51,7 @@ const messagesSlice = createSlice({
   },
 });
 
-export const { addMessage, removeMessage } = messagesSlice.actions;
+export const { addMessage, removeMessage, clearMessage } =
+  messagesSlice.actions;
 
 export default messagesSlice.reducer;
