@@ -47,7 +47,9 @@ const Contacts = () => {
   };
 
   return (
-    <div className="relative md:w-1/4 bg-slate-700 p-4 border-r h-screen md:h-screen">
+    <div className="relative md:w-1/4 bg-slate-700 p-4   md:h-screen md:border-r md: border-black">
+      <h2 className="hidden md:block text-white font-bold mb-1">Contacts</h2>
+
       <div className="md:hidden">
         <button
           onClick={toggleDropdown}
@@ -56,25 +58,28 @@ const Contacts = () => {
           {isDropdownOpen ? "Close Contacts" : "Open Contacts"}
         </button>
       </div>
+
       <div className={`md:block ${isDropdownOpen ? "block" : "hidden"}`}>
         <input
           type="text"
           placeholder="Search contacts..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full p-2 mb-4 border rounded bg-blue-100"
+          className="w-full p-2 mb-4  rounded-sm bg-sky-500 text-slate-200 placeholder-white focus:outline-none focus:ring-2 focus:ring-sky-400"
         />
-        <ul>
+
+        <ul className=" border-t border-black">
           {filteredUsers.map((user) => (
             <li
               key={user._id}
-              className={`p-2 hover:bg-blue-300 cursor-pointer my-1 font-semibold ${
-                contact && contact._id === user._id
-                  ? "bg-green-400"
-                  : "bg-gray-200"
+              className={`p-2 flex items-center  rounded-sm hover:bg-blue-300 cursor-pointer text-white my-1 font-semibold ${
+                contact && contact._id === user._id ? "bg-black" : "bg-gray-500"
               }`}
               onClick={() => addContactHandler(user)}
             >
+              <div className="capitalize m-2 flex justify-center rounded-full p-3 items-center w-5 h-5  bg-sky-500 text-black border-sky-100 border-1">
+                {user.username[0]}
+              </div>
               {user.username}
             </li>
           ))}

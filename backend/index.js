@@ -132,7 +132,13 @@ io.on("connection", (socket) => {
     if (socket.user && socket.user._id) {
       socketIdToUserId.set(socket.id, socket.user._id.toString());
     }
-    console.log(socketIdToUserId);
+    //Therefore Active Users
+    var activeUsers = Array.from(socketIdToUserId.entries());
+    //Upadate active status
+    activeUsers.map(async (activeUser) => {
+      await User.updateOne({ _id: activeUser[1] }, { $set: { active: true } });
+      console.log(`Updated user with ID to active ${activeUser[1]}`);
+    });
 
     socket.on("sendMessage", async (message, contact, sender) => {
       try {
@@ -178,7 +184,19 @@ io.on("connection", (socket) => {
     });
 
     socket.on("disconnect", () => {
-      console.log("Client disconnected");
+      var inactiveUsers = activeUsers.filter(
+        ([socketId, uId]) => socketId == socket.id
+      );
+      // console.log("Disconneted:");
+      // console.log(inactiveUsers);
+      //Update active status to false
+      inactiveUsers.map(async (inactiveUser) => {
+        await User.updateOne(
+          { _id: inactiveUser[1] },
+          { $set: { active: false } }
+        );
+        console.log(`Updated user with ID to inactive ${inactiveUser[1]}`);
+      });
     });
   });
 });

@@ -7,7 +7,7 @@ import ChatNav from "../components/ChatNav";
 const Layout = () => {
   // const { user, contact } = useSelector((state) => state.auth);
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <div className="min-h-screen flex flex-col md:flex-row bg-black">
       {/* Contacts Sidebar */}
       <Contacts />
 
