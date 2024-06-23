@@ -133,12 +133,13 @@ io.on("connection", (socket) => {
       socketIdToUserId.set(socket.id, socket.user._id.toString());
     }
     //Therefore Active Users
-    var activeUsers = Array.from(socketIdToUserId.entries());
-    //Upadate active status
-    activeUsers.map(async (activeUser) => {
-      await User.updateOne({ _id: activeUser[1] }, { $set: { active: true } });
-      console.log(`Updated user with ID to active ${activeUser[1]}`);
-    });
+    const sockUsers = Array.from(socketIdToUserId.entries());
+    console.log(sockUsers);
+    //set from active users
+    const activeUsersSet = new Set(sockUsers.map((subArray) => subArray[1]));
+    var activeUsers = Array.from(activeUsersSet);
+    //Emit active userid
+    io.emit("activeUsers", activeUsers);
 
     socket.on("sendMessage", async (message, contact, sender) => {
       try {
@@ -182,25 +183,19 @@ io.on("connection", (socket) => {
         // Handle pending message logic (optional)
       }
     });
-
+    //..............................................................................................
     socket.on("disconnect", () => {
-      var inactiveUsers = activeUsers.filter(
+      var inactiveUsersId = sockUsers.filter(
         ([socketId, uId]) => socketId == socket.id
-      );
-      // console.log("Disconneted:");
-      // console.log(inactiveUsers);
-      //Update active status to false
-      inactiveUsers.map(async (inactiveUser) => {
-        await User.updateOne(
-          { _id: inactiveUser[1] },
-          { $set: { active: false } }
-        );
-        console.log(`Updated user with ID to inactive ${inactiveUser[1]}`);
-      });
+      )[0][1];
+      console.log(inactiveUsersId);
+
+      activeUsers = activeUsers.filter((uId) => uId != inactiveUsersId);
+      io.emit("activeUsers", activeUsers);
     });
   });
 });
-
+//..........................................................................................
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

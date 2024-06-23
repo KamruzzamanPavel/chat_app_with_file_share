@@ -1,4 +1,3 @@
-// src/components/Chat.js
 import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import io from "socket.io-client";
@@ -10,43 +9,36 @@ const Chat = () => {
   const { user, contact, token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const messagesEndRef = useRef(null);
-  //.........................................................
-  // useEffect(() => {
-  //   dispatch(fetchMessages());
-  // }, [dispatch]);
-  //..........................................................
+  const socket = useRef(null);
+
   useEffect(() => {
-    const socket = io("http://localhost:5000", {
+    socket.current = io("http://localhost:5000", {
       query: { token },
     });
 
-    socket.on("receiveMessage", (message) => {
+    socket.current.on("receiveMessage", (message) => {
       dispatch(addMessage(message));
       scrollToBottom();
     });
 
     return () => {
-      socket.disconnect();
+      socket.current.disconnect();
     };
   }, [token, dispatch]);
-  //........................................................
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-  //...........................................................................................
-  const sendMessage = async () => {
+
+  const sendMessage = () => {
     if (message.trim() === "") {
       return; // Prevent sending empty messages
     }
 
-    const socket = await io("http://localhost:5000", {
-      query: { token },
-    });
-
-    socket.emit("sendMessage", message, contact, user._id); //
+    socket.current.emit("sendMessage", message, contact, user._id);
     setMessage("");
   };
-  //...............................................................................................
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault(); // Prevents the default form submission behavior
@@ -65,8 +57,8 @@ const Chat = () => {
   }
 
   return (
-    <div className=" rounded p-1 flex-1 flex flex-col h-full bg-slate-500">
-      <div className="flex-1  bg-slate-700 p-4 rounded shadow overflow-y-scroll ">
+    <div className="rounded p-1 flex-1 flex flex-col h-full bg-slate-500">
+      <div className="flex-1 bg-slate-700 p-4 rounded shadow overflow-y-scroll">
         {list && list.length > 0 ? (
           list.map((msg, index) => (
             <div
@@ -111,4 +103,5 @@ const Chat = () => {
     </div>
   );
 };
+
 export default Chat;
