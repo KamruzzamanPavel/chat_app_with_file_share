@@ -13,7 +13,7 @@ const Contacts = () => {
   const dispatch = useDispatch();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const socket = useRef(null);
-
+  //Get active users' _ids
   useEffect(() => {
     socket.current = io("http://localhost:5000", {
       query: { token },
@@ -28,12 +28,9 @@ const Contacts = () => {
     };
   }, [token]);
   //................................................................
-  const filteredActiveUsers = activeUsers.filter(
-    // eslint-disable-next-line no-unused-vars
-    (uId) => uId != user._id
-  );
+  var filteredActiveUsers = activeUsers.filter((uId) => uId != user._id);
   console.log(filteredActiveUsers);
-  //................................................................
+  //..........................Get User's from DB......................................
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -49,11 +46,17 @@ const Contacts = () => {
     fetchUsers();
   }, [token]);
   //..........................
-  const filteredUsers = users.filter(
+  var filteredUsers = users.filter(
     (users) =>
       users._id !== user._id &&
       users.username.toLowerCase().includes(search.toLowerCase())
   );
+
+  //..........................Set filterd user active if _id in filteredActive array
+  filteredUsers = filteredUsers.map((user) => ({
+    ...user,
+    active: filteredActiveUsers.includes(user._id),
+  }));
   console.log(filteredUsers);
   //........................................................................
   const addContactHandler = (selectedUser) => {
@@ -96,8 +99,8 @@ const Contacts = () => {
           {filteredUsers.map((user) => (
             <li
               key={user._id}
-              className={`p-2 flex items-center rounded-sm hover:bg-blue-300 cursor-pointer text-white my-1 font-semibold ${
-                contact && contact._id === user._id ? "bg-black" : "bg-gray-500"
+              className={`p-2 flex items-center rounded-sm border-green-500 hover:bg-sky-800 bg-black cursor-pointer text-white my-1 font-semibold ${
+                contact && contact._id === user._id ? "border-r " : ""
               }`}
               onClick={() => addContactHandler(user)}
             >
@@ -105,7 +108,11 @@ const Contacts = () => {
                 {user.username[0]}
               </div>
               {user.username}
-              {user.active ? <>active</> : <></>}
+              {user.active ? (
+                <div className="ml-auto  h-2 w-2 bg-green-400 rounded-full "></div>
+              ) : (
+                <></>
+              )}
             </li>
           ))}
         </ul>
