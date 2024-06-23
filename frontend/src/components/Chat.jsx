@@ -58,7 +58,13 @@ const Chat = () => {
 
   return (
     <div className="rounded p-1 flex-1 flex flex-col h-full bg-slate-500">
-      <div className="flex-1 bg-slate-700 p-4 rounded shadow overflow-y-scroll">
+      <div
+        className="flex-1 bg-slate-700 p-4 rounded shadow overflow-y-scroll"
+        style={{
+          scrollbarWidth: "thin",
+          scrollbarColor: "rgba(155, 155, 155, 0.5) transparent",
+        }}
+      >
         {list && list.length > 0 ? (
           list.map((msg, index) => (
             <div
@@ -68,13 +74,13 @@ const Chat = () => {
               }`}
             >
               <div
-                className={`p-2 max-w-xs rounded ${
+                className={`py-1 px-3   rounded-xl ${
                   msg.sender === user._id
-                    ? "bg-green-100 border border-green-200"
-                    : "bg-blue-100 border border-blue-200"
+                    ? "bg-gray-800 text-white self-end"
+                    : "bg-sky-900 text-white  border border-sky-500 self-start"
                 }`}
               >
-                <p className="text-black font-semibold">{msg.content}</p>
+                <p className="font-semibold">{msg.content}</p>
               </div>
             </div>
           ))
@@ -90,12 +96,12 @@ const Chat = () => {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="flex-1 p-2 border rounded-l"
+          className="flex-1 p-2 border border-slate-800 font-semibold focus:outline-none rounded-l bg-black text-white"
           placeholder="Type your message..."
         />
         <button
           onClick={sendMessage}
-          className="bg-blue-500 hover:bg-blue-700 text-white p-2 rounded-r"
+          className="bg-blue-800 hover:bg-blue-700 text-white p-2 rounded-r"
         >
           Send
         </button>

@@ -57,7 +57,7 @@ const Contacts = () => {
     ...user,
     active: filteredActiveUsers.includes(user._id),
   }));
-  console.log(filteredUsers);
+  // console.log(filteredUsers);
   //........................................................................
   const addContactHandler = (selectedUser) => {
     try {
