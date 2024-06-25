@@ -15,11 +15,9 @@ const ChatNav = () => {
         </div>
         <div className="flex items-center space-x-4">
           {user && (
-            <div className="flex items-center text-lg text-gray-300 font-semibold">
-              Your Profile:
-              <div className="bg-gray-600 text-white ml-2 rounded-full px-3 py-1 text-lg font-semibold">
-                {user.username}
-              </div>
+            <div className="flex border p-1 rounded-full border-black items-center text-lg text-gray-300 font-bold">
+              <img src="profile.svg" alt="profile" height={40} width={40} />
+              <div className="  px-3 py-1 text-lg ">{user.username}</div>
             </div>
           )}
           <LogoutBtn />

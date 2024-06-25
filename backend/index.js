@@ -195,6 +195,30 @@ io.on("connection", (socket) => {
     });
   });
 });
+//...................................Logout................................................
+app.post("/logout", authMiddleware, (req, res) => {
+  const userId = req.user._id.toString();
+
+  // Find the socket ID(s) associated with the user
+  const userSocketIds = Array.from(socketIdToUserId.entries()).filter(
+    ([socketId, id]) => id === userId
+  );
+
+  // Remove the user's socket IDs from the map??????
+  userSocketIds.forEach(([socketId]) => {
+    socketIdToUserId.delete(socketId);
+  });
+
+  // Remove the user from the active users list
+  const activeUsersSet = new Set(Array.from(socketIdToUserId.values()));
+  const activeUsers = Array.from(activeUsersSet);
+
+  // Notify all clients about the updated active users list
+  io.emit("activeUsers", activeUsers);
+
+  res.send({ message: "Logged out successfully" });
+});
+
 //..........................................................................................
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import io from "socket.io-client";
 import { addMessage } from "../store/messageSlice";
+import SendButton from "./SendButton";
 
 const Chat = () => {
   const [message, setMessage] = useState("");
@@ -57,7 +58,7 @@ const Chat = () => {
   }
 
   return (
-    <div className="rounded p-1 flex-1 flex flex-col h-full bg-slate-500">
+    <div className="rounded p-1 flex-1 flex flex-col h-full bg-slate-600">
       <div
         className="flex-1 bg-slate-700 p-4 rounded shadow overflow-y-scroll"
         style={{
@@ -74,10 +75,17 @@ const Chat = () => {
               }`}
             >
               <div
+                className={`capitalize m-2 flex justify-center rounded-full p-3 items-center w-5 h-5 bg-sky-500 text-black border-sky-100 border-1 ${
+                  msg.sender === user._id ? "hidden" : ""
+                }`}
+              >
+                {contact.username[0]}
+              </div>
+              <div
                 className={`py-1 px-3   rounded-xl ${
                   msg.sender === user._id
                     ? "bg-gray-800 text-white self-end"
-                    : "bg-sky-900 text-white  border border-sky-500 self-start"
+                    : "bg-sky-900 text-white  border border-sky-700 self-start"
                 }`}
               >
                 <p className="font-semibold">{msg.content}</p>
@@ -101,9 +109,9 @@ const Chat = () => {
         />
         <button
           onClick={sendMessage}
-          className="bg-blue-800 hover:bg-blue-700 text-white p-2 rounded-r"
+          className="bg-sky-600 hover:bg-sky-700 text-white p-2 rounded-r"
         >
-          Send
+          <SendButton />
         </button>
       </div>
     </div>
