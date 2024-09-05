@@ -1,8 +1,9 @@
+/* eslint-disable react/no-unescaped-entities */
 import { useState } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../store/authSlice";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -52,6 +53,12 @@ const Login = () => {
           Login
         </button>
       </form>
+      <div className="mt-4">
+        <span className="text-slate-200">Don't have an account? </span>
+        <Link to="/register" className="text-blue-400 hover:text-blue-500">
+          Register here
+        </Link>
+      </div>
     </div>
   );
 };

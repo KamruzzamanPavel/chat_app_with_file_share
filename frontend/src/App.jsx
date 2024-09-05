@@ -6,7 +6,7 @@ import { store, persistor } from "./store/store";
 import AuthMiddleware from "./components/AuthMiddleware";
 import Login from "./pages/Login";
 import Register from "./pages/Rgister";
-// import Chat from "./components/Chat";
+import LandingPage from "./pages/LandingPage";
 import "./index.css";
 
 import Layout from "./pages/Layout";
@@ -17,6 +17,7 @@ function App() {
       <PersistGate loading={null} persistor={persistor}>
         <Router>
           <Routes>
+            <Route path="/landing" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route
