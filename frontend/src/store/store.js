@@ -4,6 +4,7 @@ import storage from "redux-persist/lib/storage";
 import { thunk } from "redux-thunk"; // Import thunk correctly
 import authReducer from "./authSlice";
 import messagesReducer from "./messageSlice";
+import contactReducer from "./contactsSlice";
 import {
   FLUSH,
   REHYDRATE,
@@ -23,6 +24,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   auth: authReducer,
+  contacts: contactReducer,
   messages: messagesReducer,
   // Add other reducers as needed
 });

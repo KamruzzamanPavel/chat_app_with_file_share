@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import io from "socket.io-client";
 import { addMessage } from "../store/messageSlice";
+import { setNewMessageFlag } from "../store/contactsSlice";
 import SendButton from "./SendButton";
 import moment from "moment";
 
@@ -22,6 +23,14 @@ const Chat = () => {
     // Listen for new messages
     socket.current.on("receiveMessage", (message) => {
       dispatch(addMessage(message)); // Dispatch new message to Redux
+      console.log(message.sender); //
+
+      dispatch(
+        setNewMessageFlag({
+          contactId: message.sender,
+          hasNewMessage: true,
+        })
+      );
     });
 
     return () => {
