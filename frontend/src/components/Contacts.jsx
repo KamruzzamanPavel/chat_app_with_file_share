@@ -11,6 +11,7 @@ const Contacts = () => {
   // const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [activeUsers, setActiveUsers] = useState([]);
+
   const { user, contact, token } = useSelector((state) => state.auth);
 
   const { contacts } = useSelector((state) => state.contacts);
@@ -76,6 +77,7 @@ const Contacts = () => {
       })
     );
   };
+  //......................
   return (
     <div className="relative md:w-1/4 bg-slate-700 p-4 md:h-screen md:border-r border-black">
       <h2 className="hidden md:block text-white font-bold mb-1">Contacts</h2>

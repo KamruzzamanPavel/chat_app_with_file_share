@@ -10,6 +10,8 @@ const Chat = () => {
   const [message, setMessage] = useState(""); // State to hold the message input
   const { list } = useSelector((state) => state.messages); // Redux state for messages
   const { user, contact, token } = useSelector((state) => state.auth); // Redux state for user, contact, and token
+  // console.log(contact);
+
   const dispatch = useDispatch(); // Redux dispatch function
   const messagesEndRef = useRef(null); // Ref to scroll to the bottom
   const socket = useRef(null); // Socket instance ref
@@ -32,7 +34,9 @@ const Chat = () => {
         })
       );
     });
+    //........................................
 
+    //...........................................
     return () => {
       // Cleanup socket on component unmount
       socket.current.disconnect();
@@ -148,7 +152,17 @@ const Chat = () => {
         <input
           type="text"
           value={message} // Bind input value to state
-          onChange={(e) => setMessage(e.target.value)} // Update state on input change
+          onChange={(e) => {
+            setMessage(e.target.value); // Update the state on input change
+            if (contact && contact._id) {
+              dispatch(
+                setNewMessageFlag({
+                  contactId: contact._id,
+                  hasNewMessage: false, // Turn off the flag
+                })
+              );
+            }
+          }} // Update state on input change
           onKeyDown={handleKeyDown} // Send message on Enter
           className="flex-1 p-2 border border-slate-800 font-semibold focus:outline-none rounded-l bg-black text-white"
           placeholder="Type your message..."
