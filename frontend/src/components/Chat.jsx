@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import io from "socket.io-client";
 import { addMessage } from "../store/messageSlice";
-import { setNewMessageFlag } from "../store/contactsSlice";
+import { setNewMessageFlag, updateLastMessage } from "../store/contactsSlice";
 import SendButton from "./SendButton";
 import moment from "moment";
 
@@ -25,12 +25,17 @@ const Chat = () => {
     // Listen for new messages
     socket.current.on("receiveMessage", (message) => {
       dispatch(addMessage(message)); // Dispatch new message to Redux
-      console.log(message.sender); //
-
+      console.log(message);
       dispatch(
         setNewMessageFlag({
           contactId: message.sender,
           hasNewMessage: true,
+        })
+      );
+      dispatch(
+        updateLastMessage({
+          contactId: message.sender,
+          lastMessage: message.content,
         })
       );
     });
@@ -60,6 +65,7 @@ const Chat = () => {
 
     // Emit the message to the server
     socket.current.emit("sendMessage", message, contact, user._id);
+
     setMessage(""); // Clear the message input
   };
 
@@ -163,12 +169,30 @@ const Chat = () => {
               );
             }
           }} // Update state on input change
-          onKeyDown={handleKeyDown} // Send message on Enter
+          onKeyDown={(e) => {
+            if (message) {
+              dispatch(
+                updateLastMessage({
+                  contactId: contact._id, // Replace with the actual contact ID
+                  lastMessage: "You : " + message, // Replace with the current message content
+                })
+              );
+            }
+            handleKeyDown(e);
+          }} // Send message on Enter
           className="flex-1 p-2 border border-slate-800 font-semibold focus:outline-none rounded-l bg-black text-white"
           placeholder="Type your message..."
         />
         <button
-          onClick={sendMessage} // Send message on click
+          onClick={() => {
+            sendMessage(); // Send the message
+            dispatch(
+              updateLastMessage({
+                contactId: contact._id, // Replace with the actual contact ID
+                lastMessage: "You : " + message, // Replace with the current message content
+              })
+            );
+          }}
           className="bg-sky-600 hover:bg-sky-700 text-white p-2 rounded-r"
         >
           <SendButton />

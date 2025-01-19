@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+
 import axios from "axios";
 
 // Async action to fetch contacts
@@ -42,7 +43,16 @@ const contactSlice = createSlice({
         contact.newMessage = false;
       });
     },
+    updateLastMessage: (state, action) => {
+      const { contactId, lastMessage } = action.payload;
+      const contact = state.contacts.find((c) => c._id === contactId);
+      if (contact) {
+        contact.lastMessage = lastMessage;
+      }
+    },
   },
+  //last message
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchContacts.pending, (state) => {
@@ -60,6 +70,7 @@ const contactSlice = createSlice({
   },
 });
 
-export const { setNewMessageFlag, clearNewMessageFlags } = contactSlice.actions;
+export const { setNewMessageFlag, clearNewMessageFlags, updateLastMessage } =
+  contactSlice.actions;
 
 export default contactSlice.reducer;
