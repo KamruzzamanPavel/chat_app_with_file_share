@@ -17,9 +17,9 @@ import {
 const persistConfig = {
   key: "root",
   storage,
-  blacklist: ["yourReducerContainingNonSerializableData"],
+ // blacklist: ["yourReducerContainingNonSerializableData"],
   // or use whitelist to explicitly persist only certain reducers
-  // whitelist: ["auth", "messages"],
+  whitelist: ["auth", "messages","contacts"],
 };
 
 const rootReducer = combineReducers({
