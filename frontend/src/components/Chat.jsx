@@ -8,9 +8,9 @@ import moment from "moment";
 
 const Chat = () => {
   const [message, setMessage] = useState(""); // State to hold the message input
+  const [dropdownIndex, setDropdownIndex] = useState(null); // State to manage dropdown visibility per message
   const { list } = useSelector((state) => state.messages); // Redux state for messages
   const { user, contact, token } = useSelector((state) => state.auth); // Redux state for user, contact, and token
-  // console.log(contact);
 
   const dispatch = useDispatch(); // Redux dispatch function
   const messagesEndRef = useRef(null); // Ref to scroll to the bottom
@@ -25,7 +25,6 @@ const Chat = () => {
     // Listen for new messages
     socket.current.on("receiveMessage", (message) => {
       dispatch(addMessage(message)); // Dispatch new message to Redux
-      console.log(message);
       dispatch(
         setNewMessageFlag({
           contactId: message.sender,
@@ -39,9 +38,7 @@ const Chat = () => {
         })
       );
     });
-    //........................................
 
-    //...........................................
     return () => {
       // Cleanup socket on component unmount
       socket.current.disconnect();
@@ -74,6 +71,20 @@ const Chat = () => {
       e.preventDefault(); // Prevent default form submission
       sendMessage(); // Send message on Enter key press
     }
+  };
+
+  const handleEdit = (messageId) => {
+    console.log("Edit tapped for message ID:", messageId);
+    // Add your edit logic here (e.g., show edit form).
+  };
+
+  const handleDelete = (messageId) => {
+    console.log("Delete tapped for message ID:", messageId);
+    // Add your delete logic here (e.g., confirmation dialog).
+  };
+
+  const toggleDropdown = (index) => {
+    setDropdownIndex(dropdownIndex === index ? null : index);
   };
 
   if (contact == null) {
@@ -132,7 +143,7 @@ const Chat = () => {
                     {contact.username[0]}
                   </div>
                   <div
-                    className={`py-1 px-3 rounded-xl ${
+                    className={`py-1 flex px-3 rounded-xl ${
                       msg.sender === user._id
                         ? "bg-gray-800 text-white self-end"
                         : "bg-sky-900 text-white border border-sky-700 self-start"
@@ -140,6 +151,39 @@ const Chat = () => {
                   >
                     {/* Message content */}
                     <p className="font-semibold">{msg.content}</p>
+                    {/* Dropdown Menu */}
+                    {msg.sender === user._id && (
+                      <div className="relative ml-2">
+                        <div
+                          className="flex items-center cursor-pointer text-lg"
+                          onClick={() => toggleDropdown(index)}
+                        >
+                          ⋮
+                        </div>
+                        {dropdownIndex === index && (
+                          <div className="absolute right-0 mt-2 w-24 bg-white border border-gray-300 rounded shadow-md z-10">
+                            <div
+                              className="px-4 py-2 hover:bg-black text-gray-400 cursor-pointer"
+                              onClick={() => {
+                                handleEdit(msg._id);
+                                setDropdownIndex(null);
+                              }}
+                            >
+                              Edit
+                            </div>
+                            <div
+                              className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600"
+                              onClick={() => {
+                                handleDelete(msg._id);
+                                setDropdownIndex(null);
+                              }}
+                            >
+                              Delete
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
