@@ -94,7 +94,7 @@ module.exports = (server) => {
 
           // Notify the receiver and sender about the updated message
           contactSocketId.forEach(([receiverSocketId]) => {
-            io.to(receiverSocketId).emit("messageUpdated", contact._id);
+            io.to(receiverSocketId).emit("messageUpdated", updatedMessage);
           });
         } catch (error) {
           console.error("Error editing message:", error);

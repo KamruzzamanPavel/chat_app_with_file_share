@@ -14,6 +14,7 @@ const Chat = () => {
   const [editIndex, seteditIndex] = useState(null);
   //..................................................
   const { list } = useSelector((state) => state.messages); // Redux state for messages
+
   const { user, contact, token } = useSelector((state) => state.auth); // Redux state for user, contact, and token
 
   const dispatch = useDispatch(); // Redux dispatch function
@@ -44,9 +45,14 @@ const Chat = () => {
     });
 
     //listen for edit msg
-    socket.current.on("messageUpdated", (contact) =>
-      console.log("edit:", contact)
-    );
+    socket.current.on("messageUpdated", (updatedMessage) => {
+      dispatch(
+        updateMessage({
+          id: updatedMessage._id,
+          newContent: updatedMessage.content,
+        })
+      );
+    });
 
     return () => {
       // Cleanup socket on component unmount
@@ -82,36 +88,21 @@ const Chat = () => {
     }
   };
 
-  const handleEdit = () => {
+  const handleEdit = (editId) => {
     console.log("Edit tapped for message ID:", editIndex);
     console.log("Edit tapped for message content:", editMessage);
+    console.log(editId);
     // Emit the message to the server
-    socket.current.emit("editMessage", editMessage, contact, user._id, editIndex);
-    // Add your edit logic here (e.g., show edit form).
+    if (editMessage)
+      socket.current.emit(
+        "editMessage",
+        editMessage,
+        contact,
+        user._id,
+        editId
+      );
+    seteditMessage("");
   };
-  //...........................................................
-  const handleEdit_1 = (messageId, currentContent) => {
-    setEditingMessageId(messageId); // Set the message ID being edited
-    setEditedContent(currentContent); // Pre-fill the content for editing
-  };
-
-  const saveEditedMessage = () => {
-    if (editedContent.trim() === "") {
-      return; // Prevent saving empty content
-    }
-
-    socket.current.emit("editMessage", {
-      messageId: editingMessageId,
-      content: editedContent,
-    }); // Emit edit to server
-    dispatch(
-      updateMessage({ messageId: editingMessageId, content: editedContent })
-    ); // Update in Redux
-
-    setEditingMessageId(null); // Reset editing state
-    setEditedContent(""); // Clear edited content
-  };
-  //...........................................................
 
   const handleDelete = (messageId) => {
     console.log("Delete tapped for message ID:", messageId);
@@ -192,21 +183,35 @@ const Chat = () => {
                     {editIndex === index ? (
                       <div className="bg-gray-800 text-white  rounded-md flex items-center space-x-2 self-end">
                         <input
-                          type="text" // Use a text input for better control and accessibility
+                          type="text"
+                          value={editMessage}
                           className="bg-transparent border-none border-gray-500 focus:outline-none flex-1"
-                          value={msg.content}
-                          onChange={(e)=>{seteditMessage(e.target.value)}} // Handle the input change
+                          onChange={(e) => {
+                            seteditMessage(e.target.value);
+                          }} // Handle the input change
                         />
                         <button
                           className="bg-red-500 text-white font-extrabold px-2 py-1 rounded-full hover:bg-red-600"
-                          onClick={() => { toggleEdit(); seteditMessage(''); }} // Toggle editing mode
+                          onClick={() => {
+                            toggleEdit();
+                            seteditMessage("");
+                          }} // Toggle editing mode
                           title="Cancel"
                         >
                           &#215; {/* Close icon */}
                         </button>
                         <button
                           className="bg-green-500 text-white px-2 py-1 rounded-full font-extrabold hover:bg-green-600"
-                          onClick={} // Save changes
+                          onClick={() => {
+                            dispatch(
+                              updateMessage({
+                                id: msg._id,
+                                newContent: editMessage,
+                              })
+                            );
+                            handleEdit(msg._id);
+                            toggleEdit();
+                          }} // Save changes
                           title="Save"
                         >
                           &#10003; {/* Checkmark icon */}
@@ -230,7 +235,7 @@ const Chat = () => {
                             <div
                               className="px-4 py-2 hover:bg-black text-gray-400 cursor-pointer"
                               onClick={() => {
-                                handleEdit(msg._id, msg.content);
+                                seteditMessage(msg.content);
                                 toggleEdit(index);
                                 setDropdownIndex(null);
                               }}

@@ -36,7 +36,7 @@ const messagesSlice = createSlice({
     },
     updateMessage: (state, action) => {
       const { id, newContent } = action.payload;
-      const message = state.list.find((msg) => msg.id === id);
+      const message = state.list.find((msg) => msg._id === id);
       if (message) {
         message.content = newContent; // Update the specific field(s)
       }
