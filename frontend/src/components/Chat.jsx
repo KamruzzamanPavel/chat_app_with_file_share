@@ -1,7 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import io from "socket.io-client";
-import { addMessage, updateMessage } from "../store/messageSlice";
+import {
+  addMessage,
+  deleteMessage,
+  updateMessage,
+} from "../store/messageSlice";
 import { setNewMessageFlag, updateLastMessage } from "../store/contactsSlice";
 import SendButton from "./SendButton";
 import moment from "moment";
@@ -89,24 +93,32 @@ const Chat = () => {
   };
 
   const handleEdit = (editId) => {
-    console.log("Edit tapped for message ID:", editIndex);
-    console.log("Edit tapped for message content:", editMessage);
-    console.log(editId);
     // Emit the message to the server
-    if (editMessage)
-      socket.current.emit(
-        "editMessage",
-        editMessage,
-        contact,
-        user._id,
-        editId
-      );
+    if (editMessage.trim() === "") return;
+    socket.current.emit("editMessage", editMessage, contact, user._id, editId);
+    dispatch(
+      updateMessage({
+        id: editId,
+        newContent: editMessage,
+      })
+    );
     seteditMessage("");
   };
 
-  const handleDelete = (messageId) => {
-    console.log("Delete tapped for message ID:", messageId);
-    // Add your delete logic here (e.g., confirmation dialog).
+  const handleDelete = (deleteId) => {
+    socket.current.emit(
+      "editMessage",
+      "delete1998",
+      contact,
+      user._id,
+      deleteId
+    );
+    dispatch(
+      deleteMessage({
+        id: deleteId,
+        newContent: "This Message Was Deleted.",
+      })
+    );
   };
   //.............
   const toggleDropdown = (index) => {
@@ -129,10 +141,10 @@ const Chat = () => {
   }
 
   return (
-    <div className="rounded p-1 flex-1 flex flex-col h-full bg-slate-600">
+    <div className=" p-1 flex-1 flex flex-col h-full ">
       {/* Messages container */}
       <div
-        className="flex-1 bg-slate-700 p-4 rounded shadow overflow-y-scroll"
+        className="flex-1  p-4   overflow-y-scroll"
         style={{
           scrollbarWidth: "thin",
           scrollbarColor: "rgba(155, 155, 155, 0.5) transparent",
@@ -153,7 +165,7 @@ const Chat = () => {
                 {currentMessageDate !== previousMessageDate && (
                   // Date separator for messages
                   <div className="text-center my-4">
-                    <span className="bg-slate-500 text-white px-3 py-1 rounded-full">
+                    <span className="bg-slate-600 text-white px-3 py-1 rounded-full">
                       {currentMessageDate}
                     </span>
                   </div>
@@ -164,6 +176,7 @@ const Chat = () => {
                     msg.sender === user._id ? "justify-end" : "justify-start"
                   }`}
                 >
+                  {msg.edited && <p className="text-blue-700">Edited.</p>}
                   <div
                     className={`capitalize m-2 flex justify-center rounded-full p-3 items-center w-5 h-5 bg-sky-500 text-black border-sky-100 border-1 ${
                       msg.sender === user._id ? "hidden" : ""
@@ -203,12 +216,6 @@ const Chat = () => {
                         <button
                           className="bg-green-500 text-white px-2 py-1 rounded-full font-extrabold hover:bg-green-600"
                           onClick={() => {
-                            dispatch(
-                              updateMessage({
-                                id: msg._id,
-                                newContent: editMessage,
-                              })
-                            );
                             handleEdit(msg._id);
                             toggleEdit();
                           }} // Save changes
@@ -218,18 +225,28 @@ const Chat = () => {
                         </button>
                       </div>
                     ) : (
-                      <p className="font-semibold">{msg.content}</p>
+                      <p
+                        className={`${
+                          msg.deleted
+                            ? "font-thin italic text-gray-500"
+                            : "font-semibold"
+                        }`}
+                      >
+                        {msg.content}
+                      </p>
                     )}
 
                     {/* Dropdown Menu */}
                     {msg.sender === user._id && (
                       <div className="relative ml-2">
-                        <div
-                          className="flex items-center cursor-pointer text-lg"
-                          onClick={() => toggleDropdown(index)}
-                        >
-                          ⋮
-                        </div>
+                        {!(editIndex === index || msg.deleted) && (
+                          <div
+                            className="flex items-center cursor-pointer text-lg"
+                            onClick={() => toggleDropdown(index)}
+                          >
+                            ⋮
+                          </div>
+                        )}
                         {dropdownIndex === index && (
                           <div className="absolute right-0 mt-2 w-24 bg-white border border-gray-300 rounded shadow-md z-10">
                             <div

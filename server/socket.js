@@ -78,11 +78,23 @@ module.exports = (server) => {
         console.log("edit");
 
         try {
-          const updatedMessage = await Message.findByIdAndUpdate(
-            messageId,
-            { content: message, edited: true }, // Update both content and edited flag
-            { new: true } // Return the updated document
-          );
+          if (message === "delete1998") {
+            const updatedMessage = await Message.findByIdAndUpdate(
+              messageId,
+              {
+                content: "This message was deleted.",
+                edited: false,
+                deleted: true,
+              }, // Update both content and edited flag
+              { new: true } // Return the updated document
+            );
+          } else {
+            const updatedMessage = await Message.findByIdAndUpdate(
+              messageId,
+              { content: message, edited: true }, // Update both content and edited flag
+              { new: true } // Return the updated document
+            );
+          }
 
           if (!updatedMessage) {
             return console.error("Message not found");

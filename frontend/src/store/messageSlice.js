@@ -39,6 +39,16 @@ const messagesSlice = createSlice({
       const message = state.list.find((msg) => msg._id === id);
       if (message) {
         message.content = newContent; // Update the specific field(s)
+        message.edited = true;
+      }
+    },
+    deleteMessage: (state, action) => {
+      const { id, newContent } = action.payload;
+      const message = state.list.find((msg) => msg._id === id);
+      if (message) {
+        message.content = newContent; // Update the specific field(s)
+        message.deleted = true;
+        message.edited = false;
       }
     },
   },
@@ -58,7 +68,12 @@ const messagesSlice = createSlice({
   },
 });
 
-export const { addMessage, removeMessage, clearMessage, updateMessage } =
-  messagesSlice.actions;
+export const {
+  addMessage,
+  removeMessage,
+  clearMessage,
+  deleteMessage,
+  updateMessage,
+} = messagesSlice.actions;
 
 export default messagesSlice.reducer;
