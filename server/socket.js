@@ -43,6 +43,8 @@ module.exports = (server) => {
 
       // Listen for the "sendMessage" event
       socket.on("sendMessage", async (message, contact, sender) => {
+        console.log("sendMessage");
+
         try {
           // Create a new message instance
           const newMessage = new Message({
@@ -68,6 +70,34 @@ module.exports = (server) => {
           io.to(socket.id).emit("receiveMessage", newMessage);
         } catch (error) {
           console.error("Error saving or sending message:", error);
+        }
+      });
+
+      // Listen for the "editMessage" event
+      socket.on("editMessage", async (message, contact, sender, messageId) => {
+        console.log("edit");
+
+        try {
+          const updatedMessage = await Message.findByIdAndUpdate(
+            messageId,
+            { content: message, edited: true }, // Update both content and edited flag
+            { new: true } // Return the updated document
+          );
+
+          if (!updatedMessage) {
+            return console.error("Message not found");
+          }
+          // Find the socket IDs of the contact (receiver)
+          const contactSocketId = Array.from(socketIdToUserId.entries()).filter(
+            ([id, userId]) => userId === contact._id
+          );
+
+          // Notify the receiver and sender about the updated message
+          contactSocketId.forEach(([receiverSocketId]) => {
+            io.to(receiverSocketId).emit("messageUpdated", contact._id);
+          });
+        } catch (error) {
+          console.error("Error editing message:", error);
         }
       });
 
