@@ -78,6 +78,11 @@ module.exports = (server) => {
         console.log("edit");
 
         try {
+          // Find the socket IDs of the contact (receiver)
+          const contactSocketId = Array.from(socketIdToUserId.entries()).filter(
+            ([id, userId]) => userId === contact._id
+          );
+
           if (message === "delete1998") {
             const updatedMessage = await Message.findByIdAndUpdate(
               messageId,
@@ -88,26 +93,27 @@ module.exports = (server) => {
               }, // Update both content and edited flag
               { new: true } // Return the updated document
             );
+            // Notify the receiver and sender about the updated message
+            contactSocketId.forEach(([receiverSocketId]) => {
+              io.to(receiverSocketId).emit("messageDeleted", updatedMessage);
+            });
+            if (!updatedMessage) {
+              return console.error("Message not found");
+            }
           } else {
             const updatedMessage = await Message.findByIdAndUpdate(
               messageId,
               { content: message, edited: true }, // Update both content and edited flag
               { new: true } // Return the updated document
             );
+            // Notify the receiver and sender about the updated message
+            contactSocketId.forEach(([receiverSocketId]) => {
+              io.to(receiverSocketId).emit("messageUpdated", updatedMessage);
+            });
+            if (!updatedMessage) {
+              return console.error("Message not found");
+            }
           }
-
-          if (!updatedMessage) {
-            return console.error("Message not found");
-          }
-          // Find the socket IDs of the contact (receiver)
-          const contactSocketId = Array.from(socketIdToUserId.entries()).filter(
-            ([id, userId]) => userId === contact._id
-          );
-
-          // Notify the receiver and sender about the updated message
-          contactSocketId.forEach(([receiverSocketId]) => {
-            io.to(receiverSocketId).emit("messageUpdated", updatedMessage);
-          });
         } catch (error) {
           console.error("Error editing message:", error);
         }

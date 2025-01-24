@@ -9,6 +9,7 @@ const Layout = () => {
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-black">
       {/* Contacts Sidebar */}
+
       <Contacts />
 
       {/* Main Chat Area */}

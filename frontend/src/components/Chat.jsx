@@ -57,7 +57,15 @@ const Chat = () => {
         })
       );
     });
-
+    //listen for delete msg
+    socket.current.on("messageDeleted", (updatedMessage) => {
+      dispatch(
+        deleteMessage({
+          id: updatedMessage._id,
+          newContent: "This message was deleted.",
+        })
+      );
+    });
     return () => {
       // Cleanup socket on component unmount
       socket.current.disconnect();
@@ -241,7 +249,7 @@ const Chat = () => {
                       <div className="relative ml-2">
                         {!(editIndex === index || msg.deleted) && (
                           <div
-                            className="flex items-center cursor-pointer text-lg"
+                            className="flex items-center cursor-pointer text-lg z-0"
                             onClick={() => toggleDropdown(index)}
                           >
                             ⋮
@@ -286,7 +294,7 @@ const Chat = () => {
       </div>
 
       {/* Input field and send button */}
-      <div className="mt-4 flex">
+      <div className=" flex bottom-2 right-2 fixed md:relative  left-2 ">
         <input
           type="text"
           value={message} // Bind input value to state
