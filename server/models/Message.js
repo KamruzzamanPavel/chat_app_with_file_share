@@ -5,6 +5,7 @@ const MessageSchema = new mongoose.Schema({
   sender: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   edited: { type: Boolean, default: false },
   deleted: { type: Boolean, default: false },
+  filePath: { type: String },
   receiver: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

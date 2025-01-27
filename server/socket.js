@@ -1,8 +1,22 @@
 const socketIo = require("socket.io");
 const verifyToken = require("./utils/verifyToken");
 const Message = require("./models/Message");
-
+const path = require("path");
+const multer = require("multer");
 // A Map to store socket IDs and corresponding user IDs
+
+// Multer storage configuration
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // Set the upload folder
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+const upload = multer({ storage });
+
 const socketIdToUserId = new Map();
 
 module.exports = (server) => {
@@ -118,7 +132,6 @@ module.exports = (server) => {
           console.error("Error editing message:", error);
         }
       });
-
       // Handle disconnection events
       socket.on("disconnect", () => {
         // Remove the socket ID from the map

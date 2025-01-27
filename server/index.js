@@ -1,8 +1,12 @@
 const express = require("express");
+const path = require("path");
+const multer = require("multer");
+const fileRoutes = require("./routes/fileRoutes");
 const http = require("http");
 const mongoose = require("mongoose");
 require("dotenv").config();
 const cors = require("cors");
+const { authMiddleware } = require("./middlewares/authMiddleware");
 
 const app = express();
 const server = http.createServer(app);
@@ -17,7 +21,33 @@ app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 });
+// Multer storage configuration
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // Set the upload folder
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
 
+const upload = multer({ storage });
+// Serve static files from the uploads folder
+app.use(
+  "/uploads",
+  authMiddleware,
+  express.static(path.join(__dirname, "uploads"))
+);
+//.......................
+app.post("/upload", upload.single("file"), async (req, res) => {
+  try {
+    res
+      .status(200)
+      .json({ message: "File uploaded successfully", file: req.file });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to upload file" });
+  }
+});
 mongoose.connect(process.env.MONGO_URI).then(() => {
   console.log("database connected");
 });
@@ -25,7 +55,7 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
 app.use("/", require("./routes/authRoutes"));
 app.use("/messages", require("./routes/messageRoutes"));
 app.use("/users", require("./routes/userRoutes"));
-
+app.use("/files", fileRoutes);
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

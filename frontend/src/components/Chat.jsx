@@ -1,18 +1,25 @@
 import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 import io from "socket.io-client";
 import {
   addMessage,
   deleteMessage,
   updateMessage,
-} from "../store/messageSlice";
-import { setNewMessageFlag, updateLastMessage } from "../store/contactsSlice";
-import SendButton from "./SendButton";
+} from "./frontend/src/store/messageSlice";
+import {
+  setNewMessageFlag,
+  updateLastMessage,
+} from "./frontend/src/store/contactsSlice";
+import SendButton from "./frontend/src/components/SendButton";
 import moment from "moment";
 
 const Chat = () => {
   const [message, setMessage] = useState(""); // State to hold the message input
   const [editMessage, seteditMessage] = useState(""); // State to hold the edited message input
+  const [selectedFile, setSelectedFile] = useState(null);
+  //const [uploadStatus, setUploadStatus] = useState("");
+
   const [dropdownIndex, setDropdownIndex] = useState(null); // State to manage dropdown visibility per message
   //.................................................
   const [editIndex, seteditIndex] = useState(null);
@@ -147,7 +154,36 @@ const Chat = () => {
       </div>
     );
   }
+  //file..............sharing..........................
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
 
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      alert("Please select a file first.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    console.log(selectedFile);
+
+    try {
+      await axios.post("http://localhost:5000/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      alert("File uploaded successfully!");
+      setSelectedFile(null);
+    } catch (error) {
+      console.error("Failed to upload file:", error);
+    }
+  };
+
+  //...........end...of...file...share.....................................
   return (
     <div className=" p-1 flex-1 flex flex-col h-full ">
       {/* Messages container */}
@@ -295,6 +331,16 @@ const Chat = () => {
 
       {/* Input field and send button */}
       <div className=" flex bottom-2 right-2 fixed md:relative  left-2 ">
+        {/*file*/}
+        <label className="file-upload-label bg-transparent p-1 text-4xl font-extralight">
+          <input
+            type="file"
+            onChange={handleFileChange}
+            className="file-input hidden"
+          />
+          <span className="icon">📎</span> {/* Paperclip icon */}
+        </label>
+        {/*file*/}
         <input
           type="text"
           value={message} // Bind input value to state
@@ -323,15 +369,21 @@ const Chat = () => {
           className="flex-1 p-2 border border-slate-800 font-semibold focus:outline-none rounded-l bg-black text-white"
           placeholder="Type your message..."
         />
+
         <button
           onClick={() => {
+            if (selectedFile) {
+              handleUpload();
+              return;
+            }
             sendMessage(); // Send the message
-            dispatch(
-              updateLastMessage({
-                contactId: contact._id, // Replace with the actual contact ID
-                lastMessage: "You : " + message, // Replace with the current message content
-              })
-            );
+            if (message.trim() != "")
+              dispatch(
+                updateLastMessage({
+                  contactId: contact._id, // Replace with the actual contact ID
+                  lastMessage: "You : " + message, // Replace with the current message content
+                })
+              );
           }}
           className="bg-sky-600 hover:bg-sky-700 text-white p-2 rounded-r"
         >

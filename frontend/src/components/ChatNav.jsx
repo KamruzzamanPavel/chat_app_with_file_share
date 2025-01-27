@@ -14,7 +14,7 @@ const ChatNav = () => {
   return (
     <div className="bg-slate-700 text-white flex md:relative fixed top-1 right-1 left-1">
       {/* Contacts (hidden on larger screens) */}
-      <div className="md:hidden flex-shrink-0 absolute top-2">
+      <div className="md:hidden  flex-shrink-0 absolute top-2 left-80">
         <Contacts />
       </div>
 
