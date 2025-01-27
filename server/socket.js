@@ -90,6 +90,7 @@ module.exports = (server) => {
               messageId,
               {
                 content: "This message was deleted.",
+                filePath: "",
                 edited: false,
                 deleted: true,
               }, // Update both content and edited flag

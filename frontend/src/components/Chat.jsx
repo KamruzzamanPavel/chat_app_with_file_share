@@ -8,7 +8,8 @@ import {
   updateMessage,
 } from "../store/messageSlice";
 import { setNewMessageFlag, updateLastMessage } from "../store/contactsSlice";
-import SendButton from "../components/SendButton";
+import SendButton from "./SendButton";
+import FileComponent from "./FileComponent";
 import moment from "moment";
 
 const Chat = () => {
@@ -292,6 +293,11 @@ const Chat = () => {
                             : "font-semibold"
                         }`}
                       >
+                        {msg.filePath && (
+                          <div>
+                            <FileComponent filePath={msg.filePath} />
+                          </div>
+                        )}
                         {msg.content}
                       </p>
                     )}

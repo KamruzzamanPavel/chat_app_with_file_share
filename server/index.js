@@ -32,11 +32,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 // Serve static files from the uploads folder
-app.use(
-  "/uploads",
-  authMiddleware,
-  express.static(path.join(__dirname, "uploads"))
-);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 //.......................
 app.post("/upload", upload.single("file"), async (req, res) => {
   try {

@@ -47,6 +47,7 @@ const messagesSlice = createSlice({
       const message = state.list.find((msg) => msg._id === id);
       if (message) {
         message.content = newContent; // Update the specific field(s)
+        message.filePath = "";
         message.deleted = true;
         message.edited = false;
       }
