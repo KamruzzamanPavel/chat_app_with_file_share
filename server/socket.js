@@ -1,21 +1,8 @@
 const socketIo = require("socket.io");
 const verifyToken = require("./utils/verifyToken");
 const Message = require("./models/Message");
-const path = require("path");
-const multer = require("multer");
+
 // A Map to store socket IDs and corresponding user IDs
-
-// Multer storage configuration
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Set the upload folder
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
-});
-
-const upload = multer({ storage });
 
 const socketIdToUserId = new Map();
 
@@ -56,7 +43,7 @@ module.exports = (server) => {
       io.emit("activeUsers", activeUsers);
 
       // Listen for the "sendMessage" event
-      socket.on("sendMessage", async (message, contact, sender) => {
+      socket.on("sendMessage", async (message, filePath, contact, sender) => {
         console.log("sendMessage");
 
         try {
@@ -65,6 +52,7 @@ module.exports = (server) => {
             content: message, // Message content
             sender: sender, // Sender ID
             receiver: contact._id, // Receiver ID
+            filePath: filePath,
           });
 
           // Save the message to the database

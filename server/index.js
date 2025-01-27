@@ -1,7 +1,6 @@
 const express = require("express");
 const path = require("path");
 const multer = require("multer");
-const fileRoutes = require("./routes/fileRoutes");
 const http = require("http");
 const mongoose = require("mongoose");
 require("dotenv").config();
@@ -27,7 +26,7 @@ const storage = multer.diskStorage({
     cb(null, "uploads/"); // Set the upload folder
   },
   filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
+    cb(null, `${file.originalname}`);
   },
 });
 
@@ -55,7 +54,7 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
 app.use("/", require("./routes/authRoutes"));
 app.use("/messages", require("./routes/messageRoutes"));
 app.use("/users", require("./routes/userRoutes"));
-app.use("/files", fileRoutes);
+//.........................................................
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

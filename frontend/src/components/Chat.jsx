@@ -6,12 +6,9 @@ import {
   addMessage,
   deleteMessage,
   updateMessage,
-} from "./frontend/src/store/messageSlice";
-import {
-  setNewMessageFlag,
-  updateLastMessage,
-} from "./frontend/src/store/contactsSlice";
-import SendButton from "./frontend/src/components/SendButton";
+} from "../store/messageSlice";
+import { setNewMessageFlag, updateLastMessage } from "../store/contactsSlice";
+import SendButton from "../components/SendButton";
 import moment from "moment";
 
 const Chat = () => {
@@ -95,7 +92,7 @@ const Chat = () => {
     }
 
     // Emit the message to the server
-    socket.current.emit("sendMessage", message, contact, user._id);
+    socket.current.emit("sendMessage", message, "", contact, user._id);
 
     setMessage(""); // Clear the message input
   };
@@ -154,7 +151,9 @@ const Chat = () => {
       </div>
     );
   }
-  //file..............sharing..........................
+
+  //..........................file...sharing..........................
+
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
   };
@@ -164,10 +163,20 @@ const Chat = () => {
       alert("Please select a file first.");
       return;
     }
+    // Generate a random name for the file
+    const randomName = `file_${Date.now()}_${Math.floor(
+      Math.random() * 1000
+    )}.${selectedFile.name.split(".").pop()}`;
+
+    // Create a new file with the same content and a new name
+    let renamedFile = new File([selectedFile], randomName, {
+      type: selectedFile.type, // Preserve the original file type
+      lastModified: selectedFile.lastModified, // Preserve the original last modified date
+    });
 
     const formData = new FormData();
-    formData.append("file", selectedFile);
-    console.log(selectedFile);
+    formData.append("file", renamedFile);
+    console.log(renamedFile);
 
     try {
       await axios.post("http://localhost:5000/upload", formData, {
@@ -177,6 +186,13 @@ const Chat = () => {
       });
 
       alert("File uploaded successfully!");
+      socket.current.emit(
+        "sendMessage",
+        selectedFile.name,
+        randomName,
+        contact,
+        user._id
+      );
       setSelectedFile(null);
     } catch (error) {
       console.error("Failed to upload file:", error);
