@@ -116,7 +116,7 @@ const Contacts = () => {
                       user.newMessage ? "text-gray-200" : " text-gray-400"
                     }`}
                   >
-                    {user.lastMessage}
+                    {user.lastMessage ? user.lastMessage.slice(0, 15) : ""}
                   </p>
                 }
               </div>

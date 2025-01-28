@@ -185,8 +185,6 @@ const Chat = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-
-      alert("File uploaded successfully!");
       socket.current.emit(
         "sendMessage",
         selectedFile.name,
@@ -365,7 +363,7 @@ const Chat = () => {
         {/*file*/}
         <input
           type="text"
-          value={message} // Bind input value to state
+          value={selectedFile ? selectedFile.name : message} // Bind input value to state
           onChange={(e) => {
             setMessage(e.target.value); // Update the state on input change
             if (contact && contact._id) {
