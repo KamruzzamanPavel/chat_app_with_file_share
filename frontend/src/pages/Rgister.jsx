@@ -10,7 +10,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsRegistering(true); // Start animation
-    await axios.post("http://localhost:5000/register", {
+    await axios.post("http://192.168.0.107:5000/register", {
       username,
       password,
     });

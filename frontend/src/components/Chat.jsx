@@ -32,7 +32,7 @@ const Chat = () => {
 
   useEffect(() => {
     // Initialize socket connection
-    socket.current = io("http://localhost:5000", {
+    socket.current = io("http://192.168.0.107:5000", {
       query: { token }, // Pass token as query
     });
 
@@ -180,7 +180,7 @@ const Chat = () => {
     console.log(renamedFile);
 
     try {
-      await axios.post("http://localhost:5000/upload", formData, {
+      await axios.post("http://192.168.0.107:5000/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -203,7 +203,7 @@ const Chat = () => {
     <div className=" p-1 flex-1 flex flex-col h-full ">
       {/* Messages container */}
       <div
-        className="flex-1  p-4   overflow-y-scroll"
+        className="flex-1  p-4   overflow-y-scroll my-4"
         style={{
           scrollbarWidth: "thin",
           scrollbarColor: "rgba(155, 155, 155, 0.5) transparent",
@@ -350,9 +350,9 @@ const Chat = () => {
       </div>
 
       {/* Input field and send button */}
-      <div className=" flex bottom-2 right-2 fixed md:relative  left-2 ">
+      <div className=" flex bottom-2 right-2 fixed md:relative  left-2">
         {/*file*/}
-        <label className="file-upload-label bg-transparent p-1 text-4xl font-extralight">
+        <label className="file-upload-label bg-transparent p-1 text-2xl sm:text-4xl font-extralight">
           <input
             type="file"
             onChange={handleFileChange}

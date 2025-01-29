@@ -7,7 +7,7 @@ export const fetchContacts = createAsyncThunk(
   "contacts/fetchContacts",
   async (token, { rejectWithValue }) => {
     try {
-      const response = await axios.get("http://localhost:5000/users", {
+      const response = await axios.get("http://192.168.0.107:5000/users", {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data.map((contact) => ({

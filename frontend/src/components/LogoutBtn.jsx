@@ -20,7 +20,7 @@ const LogoutBtn = () => {
       }
 
       const response = await axios.post(
-        "http://localhost:5000/logout",
+        "http://192.168.0.107:5000/logout",
         {},
         {
           headers: {

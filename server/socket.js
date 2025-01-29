@@ -10,7 +10,7 @@ module.exports = (server) => {
   // Initialize Socket.io with CORS settings
   const io = socketIo(server, {
     cors: {
-      origin: "http://localhost:5173", // Allow this origin
+      origin: "http://192.168.0.107:5173", // Allow this origin
       methods: ["GET", "POST"], // Allow these HTTP methods
     },
   });

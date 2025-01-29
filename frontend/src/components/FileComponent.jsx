@@ -7,7 +7,7 @@ const FileComponent = ({ filePath }) => {
 
   // Extract the file extension
   const fileExtension = filePath.split(".").pop().toLowerCase();
-  const fileUrl = `http://localhost:5000/uploads/${filePath}`;
+  const fileUrl = `http://192.168.0.107:5000/uploads/${filePath}`;
 
   // Render based on file type
   switch (fileExtension) {

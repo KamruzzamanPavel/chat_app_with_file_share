@@ -12,10 +12,10 @@ const server = http.createServer(app);
 const io = require("./socket")(server);
 
 app.use(express.json());
-app.use(cors({ origin: "http://localhost:5173", withCredentials: true }));
+app.use(cors({ origin: "http://192.168.0.107:5173", withCredentials: true }));
 
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "http://localhost:5173");
+  res.header("Access-Control-Allow-Origin", "http://192.168.0.107:5173");
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
@@ -52,6 +52,6 @@ app.use("/messages", require("./routes/messageRoutes"));
 app.use("/users", require("./routes/userRoutes"));
 //.........................................................
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on port http://192.168.1.107:${PORT}`);
 });
