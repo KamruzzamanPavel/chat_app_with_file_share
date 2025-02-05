@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-
+const serverIP = `${window.location.protocol}//${window.location.hostname}:5000`;
 import axios from "axios";
 
 // Async action to fetch contacts
@@ -7,7 +7,7 @@ export const fetchContacts = createAsyncThunk(
   "contacts/fetchContacts",
   async (token, { rejectWithValue }) => {
     try {
-      const response = await axios.get("http://localhost:5000/users", {
+      const response = await axios.get(`${serverIP}/users`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data.map((contact) => ({

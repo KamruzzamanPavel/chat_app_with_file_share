@@ -1,11 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+const serverIP = `${window.location.protocol}//${window.location.hostname}:5000`;
 import axios from "axios";
 
 export const fetchMessages = createAsyncThunk(
   "messages/fetchMessages",
   async (_, { getState }) => {
     const { auth } = getState();
-    const response = await axios.get("http://localhost:5000/messages", {
+    const response = await axios.get(`${serverIP}/messages`, {
       headers: {
         Authorization: `Bearer ${auth.token}`,
         Receiver: auth.contact._id,

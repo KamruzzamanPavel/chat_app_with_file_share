@@ -3,6 +3,8 @@ const verifyToken = require("./utils/verifyToken");
 const Message = require("./models/Message");
 const fs = require("fs");
 const path = require("path");
+const getIPAddress = require("./machineIP");
+const machineIP = getIPAddress();
 // A Map to store socket IDs and corresponding user IDs
 
 const socketIdToUserId = new Map();
@@ -11,7 +13,7 @@ module.exports = (server) => {
   // Initialize Socket.io with CORS settings
   const io = socketIo(server, {
     cors: {
-      origin: "http://localhost:5173", // Allow this origin
+      origin: `http://${machineIP}:5173`, // Allow this origin
       methods: ["GET", "POST"], // Allow these HTTP methods
     },
   });

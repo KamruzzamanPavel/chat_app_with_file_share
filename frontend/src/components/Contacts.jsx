@@ -4,6 +4,7 @@ import { addContact } from "../store/authSlice";
 import { fetchMessages } from "../store/messageSlice";
 import { fetchContacts, setNewMessageFlag } from "../store/contactsSlice";
 import io from "socket.io-client";
+const serverIP = `${window.location.protocol}//${window.location.hostname}:5000`;
 
 const Contacts = () => {
   const [search, setSearch] = useState("");
@@ -22,7 +23,7 @@ const Contacts = () => {
   }, [dispatch, token]);
 
   useEffect(() => {
-    socket.current = io("http://localhost:5000", {
+    socket.current = io(serverIP, {
       query: { token },
     });
 
@@ -71,7 +72,7 @@ const Contacts = () => {
   };
 
   return (
-    <div className="relative md:w-1/4 bg-slate-700 md:p-4 p-1  md:h-screen md:border-r border-black">
+    <div className="relative  bg-slate-700 md:p-4 p-1  md:h-screen md:border-r border-black">
       <h2 className="hidden md:block text-white font-bold mb-1">Contacts</h2>
 
       <div className=" p-0 m-0 ">

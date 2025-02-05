@@ -2,11 +2,14 @@ import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import io from "socket.io-client";
+const serverIP = `${window.location.protocol}//${window.location.hostname}:5000`;
+
 import {
   addMessage,
   deleteMessage,
   updateMessage,
 } from "../store/messageSlice";
+
 import { setNewMessageFlag, updateLastMessage } from "../store/contactsSlice";
 import SendButton from "./SendButton";
 import FileComponent from "./FileComponent";
@@ -32,13 +35,15 @@ const Chat = () => {
 
   useEffect(() => {
     // Initialize socket connection
-    socket.current = io("http://localhost:5000", {
+    socket.current = io(serverIP, {
       query: { token }, // Pass token as query
     });
 
     // Listen for new messages
     socket.current.on("receiveMessage", (message) => {
-      dispatch(addMessage(message)); // Dispatch new message to Redux
+      if (message.sender === contact._id || message.sender === user._id) {
+        dispatch(addMessage(message)); // Dispatch new message to Redux
+      }
       dispatch(
         setNewMessageFlag({
           contactId: message.sender,
@@ -75,7 +80,7 @@ const Chat = () => {
       // Cleanup socket on component unmount
       socket.current.disconnect();
     };
-  }, [token, dispatch]);
+  }, [token, dispatch, contact._id, user._id]);
 
   useEffect(() => {
     // Scroll to the bottom whenever the message list changes
@@ -177,10 +182,9 @@ const Chat = () => {
 
     const formData = new FormData();
     formData.append("file", renamedFile);
-    console.log(renamedFile);
 
     try {
-      await axios.post("http://localhost:5000/upload", formData, {
+      await axios.post(`${serverIP}/upload`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -203,7 +207,7 @@ const Chat = () => {
     <div className=" p-1 flex-1 flex flex-col h-full ">
       {/* Messages container */}
       <div
-        className="flex-1  p-4   overflow-y-scroll"
+        className="flex-1  p-4   overflow-y-scroll my-4"
         style={{
           scrollbarWidth: "thin",
           scrollbarColor: "rgba(155, 155, 155, 0.5) transparent",
@@ -350,9 +354,9 @@ const Chat = () => {
       </div>
 
       {/* Input field and send button */}
-      <div className=" flex bottom-2 right-2 fixed md:relative  left-2 ">
+      <div className=" flex bottom-2 right-2 fixed md:relative  left-2">
         {/*file*/}
-        <label className="file-upload-label bg-transparent p-1 text-4xl font-extralight">
+        <label className="file-upload-label bg-transparent p-1 text-2xl sm:text-4xl font-extralight">
           <input
             type="file"
             onChange={handleFileChange}

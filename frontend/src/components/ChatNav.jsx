@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useSelector } from "react-redux"; // Assuming you use Redux to manage state
 import LogoutBtn from "./LogoutBtn";
-import Contacts from "./Contacts";
 
 const ChatNav = () => {
   const { user, contact } = useSelector((state) => state.auth); // Assuming you have auth state in Redux
@@ -12,12 +11,7 @@ const ChatNav = () => {
   };
 
   return (
-    <div className="bg-slate-700 text-white flex md:relative fixed top-1 right-1 left-1">
-      {/* Contacts (hidden on larger screens) */}
-      <div className="md:hidden  flex-shrink-0 absolute top-2 left-80">
-        <Contacts />
-      </div>
-
+    <div className="hidden sm:flex bg-slate-700 text-white md:relative fixed top-1 right-1 left-1">
       <div className="container mx-auto px-4 py-2 flex justify-between items-center">
         {/* Chat Header */}
         <div className="flex items-center space-x-4">

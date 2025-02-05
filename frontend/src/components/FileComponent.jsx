@@ -1,13 +1,13 @@
 /* eslint-disable react/prop-types */
+const serverIP = `${window.location.protocol}//${window.location.hostname}:5000`;
 const FileComponent = ({ filePath }) => {
   if (!filePath) {
     return <p>No file path provided.</p>;
   }
-  console.log(filePath);
 
   // Extract the file extension
   const fileExtension = filePath.split(".").pop().toLowerCase();
-  const fileUrl = `http://localhost:5000/uploads/${filePath}`;
+  const fileUrl = `${serverIP}/uploads/${filePath}`;
 
   // Render based on file type
   switch (fileExtension) {

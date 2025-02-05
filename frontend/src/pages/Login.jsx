@@ -4,6 +4,8 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../store/authSlice";
 import { useNavigate, Link } from "react-router-dom";
+const serverIP = `${window.location.protocol}//${window.location.hostname}:5000`;
+console.log(serverIP);
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -13,7 +15,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await axios.post("http://localhost:5000/login", {
+    const response = await axios.post(`${serverIP}/login`, {
       username,
       password,
     });
