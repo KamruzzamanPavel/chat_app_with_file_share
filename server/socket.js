@@ -1,7 +1,8 @@
 const socketIo = require("socket.io");
 const verifyToken = require("./utils/verifyToken");
 const Message = require("./models/Message");
-
+const fs = require("fs");
+const path = require("path");
 // A Map to store socket IDs and corresponding user IDs
 
 const socketIdToUserId = new Map();
@@ -77,7 +78,7 @@ module.exports = (server) => {
 
       // Listen for the "editMessage" event
       socket.on("editMessage", async (message, contact, sender, messageId) => {
-        console.log("edit");
+        const existingMessage = await Message.findById(messageId);
 
         try {
           // Find the socket IDs of the contact (receiver)
@@ -86,6 +87,22 @@ module.exports = (server) => {
           );
 
           if (message === "delete1998") {
+            if (existingMessage.filePath) {
+              const filePath = path.join(
+                __dirname,
+                "uploads",
+                existingMessage.filePath
+              );
+
+              // Check if file exists before trying to delete
+              if (fs.existsSync(filePath)) {
+                fs.unlink(filePath, (err) => {
+                  if (err) console.error("Error deleting file:", err);
+                  else console.log("File deleted successfully:", filePath);
+                });
+              }
+            }
+
             const updatedMessage = await Message.findByIdAndUpdate(
               messageId,
               {
