@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { logout } from "../store/authSlice";
 import { clearMessage } from "../store/messageSlice";
 import { useDispatch, useSelector } from "react-redux";
-const serverIP = `${window.location.protocol}//${window.location.hostname}:5000`;
+const serverIP = `${window.location.protocol}//${window.location.hostname}:5001`;
 import axios from "axios";
 
 const LogoutBtn = () => {

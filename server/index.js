@@ -52,7 +52,7 @@ app.use("/", require("./routes/authRoutes"));
 app.use("/messages", require("./routes/messageRoutes"));
 app.use("/users", require("./routes/userRoutes"));
 //.........................................................
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, "0.0.0.0", () => {
+const PORT = process.env.PORT || 5001;
+server.listen(PORT, machineIP, () => {
   console.log(`Server running on port http://${machineIP}:${PORT}`);
 });

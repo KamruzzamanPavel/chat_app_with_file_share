@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-const serverIP = `${window.location.protocol}//${window.location.hostname}:5000`;
+const serverIP = `${window.location.protocol}//${window.location.hostname}:5001`;
 const FileComponent = ({ filePath }) => {
   if (!filePath) {
     return <p>No file path provided.</p>;

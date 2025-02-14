@@ -1,22 +1,45 @@
 import { useState } from "react";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "../store/authSlice";
 import { useNavigate, Link } from "react-router-dom";
+const serverIP = `${window.location.protocol}//${window.location.hostname}:5001`;
+
 const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isRegistering, setIsRegistering] = useState(false); // State to control animation
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsRegistering(true); // Start animation
-    await axios.post("http://192.168.0.107:5000/register", {
-      username,
-      password,
-    });
-    navigate("/login");
-  };
+    setIsRegistering(true);
 
+    try {
+      // Register the user
+      await axios.post(`${serverIP}/register`, { username, password });
+
+      // Log in immediately after registration
+      const response = await axios.post(`${serverIP}/login`, {
+        username,
+        password,
+      });
+
+      // Dispatch login action if using Redux
+      dispatch(loginSuccess(response.data));
+
+      // Redirect to the homepage
+      navigate("/");
+    } catch (error) {
+      console.error(
+        "Error during registration/login:",
+        error.response?.data?.message || error.message
+      );
+    } finally {
+      setIsRegistering(false);
+    }
+  };
   return (
     <div className="flex items-center flex-col  justify-center min-h-screen bg-slate-800">
       <h2 className="text-4xl font-bold text-slate-200 animate-bounce">

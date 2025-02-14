@@ -4,8 +4,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../store/authSlice";
 import { useNavigate, Link } from "react-router-dom";
-const serverIP = `${window.location.protocol}//${window.location.hostname}:5000`;
-console.log(serverIP);
+const serverIP = `${window.location.protocol}//${window.location.hostname}:5001`;
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -19,6 +18,8 @@ const Login = () => {
       username,
       password,
     });
+    console.log("resp", response);
+
     dispatch(loginSuccess(response.data));
     navigate("/");
   };

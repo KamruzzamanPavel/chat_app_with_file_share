@@ -4,7 +4,7 @@ import { addContact } from "../store/authSlice";
 import { fetchMessages } from "../store/messageSlice";
 import { fetchContacts, setNewMessageFlag } from "../store/contactsSlice";
 import io from "socket.io-client";
-const serverIP = `${window.location.protocol}//${window.location.hostname}:5000`;
+const serverIP = `${window.location.protocol}//${window.location.hostname}:5001`;
 
 const Contacts = () => {
   const [search, setSearch] = useState("");
@@ -36,10 +36,14 @@ const Contacts = () => {
     };
   }, [token]);
 
-  const filteredActiveUsers = activeUsers.filter((uId) => uId !== user._id);
+  //const filteredActiveUsers = activeUsers.filter((uId) => uId !== user._id);
+  const filteredActiveUsers = user
+    ? activeUsers.filter((uId) => uId !== user._id)
+    : [];
 
   let filteredUsers = contacts.filter(
     (users) =>
+      user &&
       users._id !== user._id &&
       users.username.toLowerCase().includes(search.toLowerCase())
   );

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import io from "socket.io-client";
-const serverIP = `${window.location.protocol}//${window.location.hostname}:5000`;
+const serverIP = `${window.location.protocol}//${window.location.hostname}:5001`;
 
 import {
   addMessage,
@@ -34,9 +34,10 @@ const Chat = () => {
   const socket = useRef(null); // Socket instance ref
 
   useEffect(() => {
+    if (!user || !contact) return;
     // Initialize socket connection
     socket.current = io(serverIP, {
-      query: { token }, // Pass token as query
+      query: { token: token || "" }, // Pass token as query
     });
 
     // Listen for new messages
@@ -80,11 +81,13 @@ const Chat = () => {
       // Cleanup socket on component unmount
       socket.current.disconnect();
     };
-  }, [token, dispatch, contact._id, user._id]);
+  }, [token, dispatch, contact?._id, user?._id]);
 
   useEffect(() => {
     // Scroll to the bottom whenever the message list changes
-    scrollToBottom();
+    setTimeout(() => {
+      scrollToBottom();
+    }, 100);
   }, [list]);
 
   const scrollToBottom = () => {
@@ -237,7 +240,7 @@ const Chat = () => {
                 <div
                   className={`flex mb-2 ${
                     msg.sender === user._id ? "justify-end" : "justify-start"
-                  }`}
+                  } `}
                 >
                   {msg.edited && <p className="text-blue-700">Edited.</p>}
                   <div
@@ -249,7 +252,7 @@ const Chat = () => {
                     {contact.username[0]}
                   </div>
                   <div
-                    className={`py-1 flex px-3 rounded-xl ${
+                    className={`py-1 max-w-[66%] flex px-3 rounded-xl ${
                       msg.sender === user._id
                         ? "bg-gray-800 text-white self-end"
                         : "bg-sky-900 text-white border border-sky-700 self-start"
@@ -289,7 +292,7 @@ const Chat = () => {
                       </div>
                     ) : (
                       <p
-                        className={`${
+                        className={` ${
                           msg.deleted
                             ? "font-thin italic text-gray-500"
                             : "font-semibold"
@@ -298,6 +301,7 @@ const Chat = () => {
                         {msg.filePath && (
                           <div>
                             <FileComponent filePath={msg.filePath} />
+                            <div ref={messagesEndRef}></div>
                           </div>
                         )}
                         {msg.content}
@@ -350,7 +354,7 @@ const Chat = () => {
           <p className="text-center text-gray-500">No messages</p>
         )}
         {/* Reference for scrolling */}
-        <div ref={messagesEndRef}></div>
+        <div ref={messagesEndRef}>end</div>
       </div>
 
       {/* Input field and send button */}

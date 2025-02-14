@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-const serverIP = `${window.location.protocol}//${window.location.hostname}:5000`;
+const serverIP = `${window.location.protocol}//${window.location.hostname}:5001`;
 import axios from "axios";
 
 // Async action to fetch contacts
